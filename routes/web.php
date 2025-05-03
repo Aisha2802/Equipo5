@@ -2,8 +2,14 @@
 use App\Http\Controllers\VinculacionController;
 use Illuminate\Support\Facades\Route;
 
+
+
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
+});
+
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
