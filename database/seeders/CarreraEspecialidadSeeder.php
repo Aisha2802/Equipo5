@@ -12,7 +12,7 @@ class CarreraEspecialidadSeeder extends Seeder
      */
     public function run(): void
     {
-        // Carreras con sus respectivas especialidades
+        // 
         $carreras = [
             [
                 'nombre' => 'Ingeniería en Sistemas Computacionales',
@@ -60,23 +60,36 @@ class CarreraEspecialidadSeeder extends Seeder
             ]
         ];
 
-          // Insertar en la base de datos
-          foreach ($carreras as $carreraData) {
+        // Insertar en la base de datos
+        foreach ($carreras as $carreraData) {
             // Insertar la carrera y obtener su ID
-            $carrera_id = DB::table('carreras')->insertGetId([
-                'nombre' => $carreraData['nombre'],
-                'created_at' => now(),
-                'updated_at' => now()
-            ], 'carrera_id'); // Especificar que queremos obtener 'carrera_id'
+            $carrera = DB::table('carreras')
+                ->updateOrInsert(
+                    ['nombre' => $carreraData['nombre']],
+                    [
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]
+                );
 
-            // Insertar sus especialidades
+            // Obtener el ID de la carrera (ya existente o recién creada)
+            $carrera_id = DB::table('carreras')
+                ->where('nombre', $carreraData['nombre'])
+                ->value('carrera_id');
+
+            // Insertar especialidades si no existen
             foreach ($carreraData['especialidades'] as $especialidad) {
-                DB::table('especialidades')->insert([
-                    'carrera_id' => $carrera_id,
-                    'nombre' => $especialidad,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
+                DB::table('especialidades')
+                    ->updateOrInsert(
+                        [
+                            'carrera_id' => $carrera_id,
+                            'nombre' => $especialidad
+                        ],
+                        [
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]
+                    );
             }
         }
     }
